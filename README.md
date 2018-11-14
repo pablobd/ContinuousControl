@@ -20,6 +20,8 @@ The observation space consists of 33 variables corresponding to position, rotati
 * After each episode, we add up the rewards that each agent received (without discounting), to get a score for each agent. This yields 20 (potentially different) scores. We then take the average of these 20 scores.
 * This yields an average score for each episode (where the average is over all 20 agents).
 
+The environment is considered solved, when the average (over 100 episodes) of those average scores is at least +30.
+
 
 ## Requirements
 First of all, you need python 3 and conda. We suggest to use the [Anaconda distribution](https://www.anaconda.com/download/#linux), although other options are available. Follow the instructions at the github [repository dlrn](https://github.com/udacity/deep-reinforcement-learning) to create an environment for the project, install dependencies and create a kernel. You will not need to install Unity, because Udacity provides two separate versions of the Unity environment:
