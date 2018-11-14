@@ -3,7 +3,7 @@
 ## Description
 Train a DRL agent control a double-jointed arm, to reach target locations. Watch this [YouTube video](https://www.youtube.com/watch?v=ZVIxt2rt1_4) to see how some researchers were able to train a similar task on a real robot! The accompanying research paper can be found [here](https://arxiv.org/pdf/1803.07067.pdf).
 
-In the second version of the project environment, there are 20 identical copies of the agent. It has been shown that having multiple copies of the same agent sharing experience can accelerate learning, as explained in this [google AI blog post](https://ai.googleblog.com/2016/10/how-robots-can-acquire-new-skills-from.html).
+In the second version of the project environment, there are 20 identical copies of the agent. It has been shown that having multiple copies of the same agent sharing experience can accelerate learning, as explained in this [google AI blog post](https://ai.googleblog.com/2016/10/how-robots-can-acquire-new-skills-from.html). You can use the second version to implement algorithms like [PPO](https://arxiv.org/pdf/1707.06347.pdf), [A3C](https://arxiv.org/pdf/1602.01783.pdf) and [D4PG](https://openreview.net/pdf?id=SyZipzbCb) that use multiple (non-interacting, parallel) copies of the same agent to distribute the task of gathering experience. 
 
 #### Rewards
 A reward of +0.1 is provided for each step that the agent's hand is in the goal location. Thus, the goal of your agent is to maintain its position at the target location for as many time steps as possible.
@@ -50,6 +50,8 @@ For game developers, these trained agents can be used for multiple purposes, inc
 #### Your own Unity environment
 
 If you are interested in building your own Unity environments after completing the project, you can follow the instructions [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Getting-Started-with-Balance-Ball.md), which walk you through all of the details of building an environment from a Unity scene. 
+
+For game developers, these trained agents can be used for multiple purposes, including controlling NPC behavior (in a variety of settings such as multi-agent and adversarial), automated testing of game builds and evaluating different game design decisions pre-release.
 
 
 ## How it works
