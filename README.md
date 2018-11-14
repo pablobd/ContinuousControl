@@ -11,6 +11,16 @@ A reward of +0.1 is provided for each step that the agent's hand is in the goal 
 #### States
 The observation space consists of 33 variables corresponding to position, rotation, velocity, and angular velocities of the arm. Each action is a vector with four numbers, corresponding to torque applicable to two joints. Every entry in the action vector should be a number between -1 and 1.
 
+#### Solving the environment
+
+**First version: 1 agent.** The task is episodic, and in order to solve the environment, your agent must get an average score of +30 over 100 consecutive episodes.
+
+**Second version: 20 identical copies of the agent.** The barrier for solving the second version of the environment is slightly different, to take into account the presence of many agents. In particular, your agents must get an average score of +30 (over 100 consecutive episodes, and over all agents). Specifically,
+
+* After each episode, we add up the rewards that each agent received (without discounting), to get a score for each agent. This yields 20 (potentially different) scores. We then take the average of these 20 scores.
+* This yields an average score for each episode (where the average is over all 20 agents).
+
+
 ## Requirements
 First of all, you need python 3 and conda. We suggest to use the [Anaconda distribution](https://www.anaconda.com/download/#linux), although other options are available. Follow the instructions at the github [repository dlrn](https://github.com/udacity/deep-reinforcement-learning) to create an environment for the project, install dependencies and create a kernel. You will not need to install Unity, because Udacity provides two separate versions of the Unity environment:
 
