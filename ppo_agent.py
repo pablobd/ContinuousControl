@@ -15,7 +15,7 @@ TAU = 1e-3              # for soft update of target parameters
 LR = 5e-4               # learning rate 
 UPDATE_EVERY = 4        # how often to update the network
 
-
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class ppoAgent():
     """Interacts with and learns from the environment."""
@@ -33,13 +33,13 @@ class ppoAgent():
         self.action_size = action_size
         self.seed = random.seed(seed)
 
-        # Q-Network
+        # PPO-Network
         self.local_ppoNet = ppoNetwork(state_size, action_size, hidden_layers, seed).to(device) #drop_p, 
         self.target_ppoNet = ppoNetwork(state_size, action_size, hidden_layers, seed).to(device) #drop_p, 
-        self.optimizer = optim.Adam(self.qnetwork_local.parameters(), lr=LR)
+        self.optimizer = optim.Adam(self.local_ppoNet.parameters(), lr=LR)
 
         # Replay memory
-        self.memory = ReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, seed)
+        # self.memory = ReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, seed)
         # Initialize time step (for updating every UPDATE_EVERY steps)
         self.t_step = 0  
 
