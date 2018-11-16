@@ -2,7 +2,7 @@ import numpy as np
 import random
 from collections import namedtuple, deque
 
-#from model import ppoNetwork
+from ppo_network import ppoNetwork
 
 import torch
 import torch.nn.functional as F
@@ -34,8 +34,8 @@ class ppoAgent():
         self.seed = random.seed(seed)
 
         # Q-Network
-        self.qnetwork_local = ppoNetwork(state_size, action_size, hidden_layers, seed).to(device) #drop_p, 
-        self.qnetwork_target = ppoNetwork(state_size, action_size, hidden_layers, seed).to(device) #drop_p, 
+        self.local_ppoNet = ppoNetwork(state_size, action_size, hidden_layers, seed).to(device) #drop_p, 
+        self.target_ppoNet = ppoNetwork(state_size, action_size, hidden_layers, seed).to(device) #drop_p, 
         self.optimizer = optim.Adam(self.qnetwork_local.parameters(), lr=LR)
 
         # Replay memory
