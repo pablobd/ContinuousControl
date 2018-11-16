@@ -2,13 +2,12 @@ import numpy as np
 import random
 from collections import namedtuple, deque
 
-from ppo_network import ppoNetwork
-
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
-BUFFER_SIZE = int(1e7)  # replay buffer size
+
 BATCH_SIZE = 64         # minibatch size
 GAMMA = 0.99            # discount factor
 TAU = 1e-3              # for soft update of target parameters
@@ -29,21 +28,92 @@ class ppoAgent():
             action_size (int): dimension of each action
             seed (int): random seed
         """
+        
+        # envrionmend dimensions
         self.state_size = state_size
         self.action_size = action_size
         self.seed = random.seed(seed)
 
-        # PPO-Network
-        self.local_ppoNet = ppoNetwork(state_size, action_size, hidden_layers, seed).to(device) #drop_p, 
-        self.target_ppoNet = ppoNetwork(state_size, action_size, hidden_layers, seed).to(device) #drop_p, 
-        self.optimizer = optim.Adam(self.local_ppoNet.parameters(), lr=LR)
+        # policy
+        self.policy = Policy(state_size, action_size, hidden_layers, seed).to(device) 
+        self.optimizer = optim.Adam(self.local_ppoNet.parameters(), lr = LR)
+        
+        # collection of trajectories - list of tuples: prob, state, action, reward
+        self.experience = namedtuple("Trajectories", field_names = ["prob", "state", "action", "reward"])
+        self.trajectories = deque()
 
         # Replay memory
         # self.memory = ReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, seed)
         # Initialize time step (for updating every UPDATE_EVERY steps)
-        self.t_step = 0  
+        self.t_step = 0
+        
+    def collect_trajectories(envs, policy, tmax=100):
+        """ collect trajectories with a given policy  """
+        # number of parallel instances
+        self.trajectories.clear()
+        n=len(envs.ps)
 
+        #initialize returning lists and start the game!
+        state_list=[]
+        reward_list=[]
+        prob_list=[]
+        action_list=[]
+
+        envs.reset()
     
+        # start all parallel agents
+        envs.step([1]*n)
+    
+        # perform nrand random steps
+        for _ in range(nrand):
+            fr1, re1, _, _ = envs.step(np.random.choice([RIGHT, LEFT],n))
+            fr2, re2, _, _ = envs.step([0]*n)
+    
+        for t in range(tmax):
+
+            # prepare the input
+            # preprocess_batch properly converts two frames into 
+            # shape (n, 2, 80, 80), the proper input for the policy
+            # this is required when building CNN with pytorch
+            batch_input = preprocess_batch([fr1,fr2])
+        
+            # probs will only be used as the pi_old
+            # no gradient propagation is needed
+            # so we move it to the cpu
+            probs = policy(batch_input).squeeze().cpu().detach().numpy()
+        
+            action = np.where(np.random.rand(n) < probs, RIGHT, LEFT)
+            probs = np.where(action==RIGHT, probs, 1.0-probs)
+        
+        
+            # advance the game (0=no action)
+            # we take one action and skip game forward
+            fr1, re1, is_done, _ = envs.step(action)
+            fr2, re2, is_done, _ = envs.step([0]*n)
+
+            reward = re1 + re2
+        
+            # store the result
+            state_list.append(batch_input)
+            reward_list.append(reward)
+            prob_list.append(probs)
+            action_list.append(action)
+        
+            # stop if any of the trajectories is done
+            # we want all the lists to be retangular
+            if is_done.any():
+                break
+
+        self.trajectoris = 
+        # return pi_theta, states, actions, rewards, probability
+        return prob_list, state_list, \
+            action_list, reward_list
+
+    def learn(deterministic = False):
+        """ choose an action deterministic or stochastic """
+        
+        
+        
     def surrogate(policy, old_probs, states, actions, rewards,
                   discount = 0.995, beta=0.01):        
         """ returns sum of log-prob divided by T same thing as -policy_loss """ 
@@ -77,4 +147,37 @@ class ppoAgent():
         (1.0-new_probs)*torch.log(1.0-old_probs+1.e-10))
 
         return torch.mean(ratio*rewards + beta*entropy)
+    
+
+    
+class Policy(nn.Module):
+    """Actor (Policy) Model."""
+
+    def __init__(self, state_size, action_size, hidden_layers = [64, 64], seed = 0):
+        """Initialize parameters and build model.
+        Params
+        ======
+            state_size (int): Dimension of each state
+            action_size (int): Dimension of each action
+            seed (int): Random seed
+            fc1_units (int): Number of nodes in first hidden layer
+            fc2_units (int): Number of nodes in second hidden layer
+        """
+        super().__init__()
+        self.seed = torch.manual_seed(seed)
+        self.hidden_layers = nn.ModuleList([nn.Linear(state_size, hidden_layers[0])])
+        # Add a variable number of more hidden layers
+        layer_sizes = zip(hidden_layers[:-1], hidden_layers[1:])
+        self.hidden_layers.extend([nn.Linear(h1, h2) for h1, h2 in layer_sizes])
+                
+        self.olinear = nn.Linear(hidden_layers[-1], action_size)
+        self.sig = nn.Sigmoid()
+        
+    def forward(self, x):
+        """Build a network that maps state -> action values."""
+        # Forward through each layer in `hidden_layers`, with ReLU activation and dropout
+        for linear in self.hidden_layers:
+            x = F.relu(linear(x))
+        
+        return self.sig(self.olinear(x))
     
