@@ -36,11 +36,10 @@ class ppoAgent():
 
         # policy
         self.policy = Policy(state_size, action_size, hidden_layers, seed).to(device) 
-        self.optimizer = optim.Adam(self.local_ppoNet.parameters(), lr = LR)
+        self.optimizer = optim.Adam(self.policy.parameters(), lr = LR)
         
-        # collection of trajectories - list of tuples: prob, state, action, reward
-        self.experience = namedtuple("Trajectories", field_names = ["prob", "state", "action", "reward"])
-        self.trajectories = deque()
+        # tuple of lists probs, states, actions, rewards
+        self.trajectories = ()
 
         # Replay memory
         # self.memory = ReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, seed)
@@ -49,8 +48,10 @@ class ppoAgent():
         
     def collect_trajectories(envs, policy, tmax=100):
         """ collect trajectories with a given policy  """
+        
+        self.trajectories = ()
+        
         # number of parallel instances
-        self.trajectories.clear()
         n=len(envs.ps)
 
         #initialize returning lists and start the game!
@@ -93,7 +94,7 @@ class ppoAgent():
 
             reward = re1 + re2
         
-            # store the result
+            # store pi_theta, states, actions, rewards           
             state_list.append(batch_input)
             reward_list.append(reward)
             prob_list.append(probs)
@@ -103,12 +104,10 @@ class ppoAgent():
             # we want all the lists to be retangular
             if is_done.any():
                 break
-
-        self.trajectoris = 
-        # return pi_theta, states, actions, rewards, probability
-        return prob_list, state_list, \
-            action_list, reward_list
-
+                
+        self.trajectories = (state_list, reward_list, prob_list, action_list)
+                
+                
     def learn(deterministic = False):
         """ choose an action deterministic or stochastic """
         
