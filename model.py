@@ -17,8 +17,7 @@ class Actor(nn.Module):
             state_size (int): Dimension of each state
             action_size (int): Dimension of each action
             seed (int): Random seed
-            fc1_units (int): Number of nodes in first hidden layer
-            fc2_units (int): Number of nodes in second hidden layer
+            hidden_layers (int list): Number of hidden layers and nodes in each hidden layer
         """
         super().__init__()
         self.seed = torch.manual_seed(seed)
@@ -36,7 +35,7 @@ class Actor(nn.Module):
         self.initialize_weights()
         
     def initialize_weights():
-        " initialize weights of layers "
+        " Initialize weights of layers "
         
         for layer in self.hidden_layers:
             layer.weight.data.uniform_(*hidden_init(layer))
@@ -45,7 +44,13 @@ class Actor(nn.Module):
         
         
     def forward(self, x):
-        " forward network that maps state -> action values "
+        """ 
+        Forward network that maps state -> action 
+        
+        Params
+        ======
+            x (tensor): State vector
+        """
         
         # forward through each layer in `hidden_layers`, with ReLU activation
         for linear in self.hidden_layers:
@@ -54,4 +59,24 @@ class Actor(nn.Module):
         # forward final layer with tanh activation (-1, 1)
         return F.tanh(self.fcfin(x))
         
+class Critic(nn.Module):
+    " Critic (Value) Model - Neural net to estimate the total expected episodic return associated to one action in a given state "
+    
+    def __init__(self, action_size, state_size, hidden_layers = [256, 256, 128, 64], seed = 123):
+        """
+        Initialize parameters and build model.
         
+        Params
+        ======
+            state_size (int): Dimension of each state
+            action_size (int): Dimension of each action
+            seed (int): Random seed
+            hidden_layers (int list): Number of hidden layers and nodes in each hidden layer
+        """
+        super().__init__()
+        self.seed = torch.manual_seed(seed)
+        
+        # initial layer
+        self.hidden_layers = nn.ModuleList([nn.Linear(state_size, hidden_layers[0])])
+    
+    
