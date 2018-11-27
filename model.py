@@ -33,10 +33,19 @@ class Actor(nn.Module):
         # final layer
         self.fcfin = nn.Linear(hidden_layers[-1], action_size)
         
-        self.reset_parameters()
+        self.initialize_weights()
+        
+    def initialize_weights():
+        " initialize weights of layers "
+        
+        for layer in self.hidden_layers:
+            layer.weight.data.uniform_(*hidden_init(layer))
+            
+        self.fcfin.weight.data.uniform_(-3e-3, 3e-3)
+        
         
     def forward(self, x):
-        """Build a network that maps state -> action values."""
+        " forward network that maps state -> action values "
         
         # forward through each layer in `hidden_layers`, with ReLU activation
         for linear in self.hidden_layers:
