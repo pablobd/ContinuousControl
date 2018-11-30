@@ -78,5 +78,45 @@ class Critic(nn.Module):
         
         # initial layer
         self.hidden_layers = nn.ModuleList([nn.Linear(state_size, hidden_layers[0])])
-    
+        
+        # hidden layers
+        hidden_layers[0] += action_size
+        layer_sizes = zip(hidden_layers[:-1], hidden_layers[1:])
+        self.hidden_layers.extend([nn.Linear(h1, h2) for h1, h2 in layer_sizes])
+        
+        # final layer
+        self.fcfin = nn.Linear(hidden_layers[-1], action_size)
+        
+        self.initialize_weights()
+        
+    def initialize_weights():
+        " Initialize weights of layers "
+        
+        for layer in self.hidden_layers:
+            layer.weight.data.uniform_(*hidden_init(layer))
+            
+        self.fcfin.weight.data.uniform_(-3e-3, 3e-3)
+        
+    def forward(self, states, actions):
+        """ 
+        Forward network that maps state -> action 
+        
+        Params
+        ======
+            states (tensor): State vector
+            actions (tensor): Action vector
+        """
+        
+        # forward through first layer
+        x = F.leaky_rely(hidden_layers[0](states))
+        
+        # concatenate output of first layer and action vector
+        x = torch.cat((x, actions), dim = 1)
+        
+        # forward through each layer in `hidden_layers`, with Leaky ReLU activation
+        for linear in self.hidden_layers[1:]:
+            x = F.leaky_relu(linear(x))
+        
+        # forward final layer with tanh activation (-1, 1)
+        return self.fcfin(x)
     
