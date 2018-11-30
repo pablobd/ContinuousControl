@@ -27,15 +27,33 @@ class Agent:
         self.seed = random.seed(random_seed)
         
         self.local_actor = Actor(action_size, state_size, random_seed, hidden_layers)
-        self.target_actor = Actor()
-        self.local_critic = Critic()
-        self.target_critic = Critic()
+        self.target_actor = Actor(action_size, state_size, random_seed, hidden_layers)
+        self.local_critic = Critic(action_size, state_size, random_seed, hidden_layers)
+        self.target_critic = Critic(action_size, state_size, random_seed, hidden_layers)
+        
+        self.experiencies = ReplayBuffer()
         
         
     
 class ReplayBuffer:
     " Internal memory of the agent "
     
+    def __init__(self, buffer_size, batch_size):
+        """Initialize a ReplayBuffer object.
+        Params
+        ======
+            buffer_size (int): maximum size of buffer
+            batch_size (int): size of each training batch
+        """
+    
+        self.experience = namedtuple('Experience', ['state', 'action', 'reward', 'next_state', 'done'])
+        self.memory = deque()
+        
+    def add(self, state, action, reward, next_state, done):
+        " Add a new experience to memory "
+        
+        self.experience = (state, action, reward, next_state, done)
+        self.memory.append(experience)
     
     
 
