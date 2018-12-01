@@ -61,16 +61,24 @@ class Agent:
             self.learn(batch)
         
         
-    def act(self, state):
+    def act(self, state, add_noise = True):
         """ Given a state choose an action
         Params
         ======
             state (float ndarray): state of the environment        
         """
+        state = torch.from_numpy(state).float().to(device)
+        self.local_actor.eval() # set network on eval mode, this has any effect only on certain modules (Dropout, BatchNorm, etc.)
         
-        self.local_actor
+        with torch.no_grad():
+            action = self.local_actor(state).cpu().data.numpy()
+            
+        """self.local_actor.train() # set nework on train mode
+        if add_noise:
+            action += self.noise.sample()
+        return np.clip(action, -1, 1)"""
         
-        
+        return action
     
     def learn(self):
         return None
