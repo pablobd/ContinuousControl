@@ -24,8 +24,7 @@ class Agent:
     
     
     def __init__(self, action_size, state_size, hidden_layers = [256, 64], random_seed = 123):
-        """ Initialize attributes of Agent 
-        
+        """ Initialize attributes of Agent        
         Params
         ======
             state_size (int): dimension of each state
@@ -45,14 +44,14 @@ class Agent:
         self.experiencies = ReplayBuffer(BUFFER_SIZE, BATCH_SIZE)
         
     def step(self, state, action, reward, next_state, done):
-        """ Save experience in replay memory, and use random sample from buffer to learn        
+        """ Saves experience in replay memory, and uses random sample from buffer to learn        
         Params
         ======
-            state (int): state of the environment
-            action (int): action chosen by agent
-            reward (int):  reward given by environment after doing this action
-            next_state (int): state of the environment after doing this action
-            done (int): flag indicating if episode has finished after doing this action
+            state (float ndarray): state of the environment
+            action (float ndarray): action chosen by agent
+            reward (float ndarray):  reward given by environment after doing this action
+            next_state (float ndarray): state of the environment after doing this action
+            done (float ndarray): flag indicating if episode has finished after doing this action
         """
         
         self.experiences.add(state, action, reward, next_state, done)
@@ -66,7 +65,7 @@ class Agent:
         """ Given a state choose an action
         Params
         ======
-            state (int): state of the environment        
+            state (float ndarray): state of the environment        
         """
         
         self.local_actor
