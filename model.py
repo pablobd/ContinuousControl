@@ -34,7 +34,7 @@ class Actor(nn.Module):
         
         self.initialize_weights()
         
-    def initialize_weights():
+    def initialize_weights(self):
         " Initialize weights of layers "
         
         for layer in self.hidden_layers:
@@ -89,7 +89,7 @@ class Critic(nn.Module):
         
         self.initialize_weights()
         
-    def initialize_weights():
+    def initialize_weights(self):
         " Initialize weights of layers "
         
         for layer in self.hidden_layers:
