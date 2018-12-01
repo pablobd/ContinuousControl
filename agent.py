@@ -16,6 +16,8 @@ LR_ACTOR = 1e-4         # learning rate of the actor
 LR_CRITIC = 3e-4        # learning rate of the critic
 WEIGHT_DECAY = 0.0001   # L2 weight decay
 
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 
 class Agent:
     " Interacts with and learns from the environment "
@@ -42,13 +44,43 @@ class Agent:
         
         self.experiencies = ReplayBuffer(BUFFER_SIZE, BATCH_SIZE)
         
-    def step(self)
+    def step(self, state, action, reward, next_state, done):
+        """ Save experience in replay memory, and use random sample from buffer to learn        
+        Params
+        ======
+            state (int): state of the environment
+            action (int): action chosen by agent
+            reward (int):  reward given by environment after doing this action
+            next_state (int): state of the environment after doing this action
+            done (int): flag indicating if episode has finished after doing this action
+        """
         
-    def act(self)
+        self.experiences.add(state, action, reward, next_state, done)
+        
+        if len(self.experiences) > BATCH_SIZE:
+            batch = self.experiences.sample()
+            self.learn(batch)
+        
+        
+    def act(self, state):
+        """ Given a state choose an action
+        Params
+        ======
+            state (int): state of the environment        
+        """
+        
+        self.local_actor
+        
+        
     
-    def learn(self)
+    def learn(self):
+        return None
     
-    def learn_soft(self)
+    def reset(self):
+        return None
+    
+    def soft_update(self):
+        return None
     
     
         
