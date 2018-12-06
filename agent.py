@@ -175,8 +175,8 @@ class ReplayBuffer:
             batch_size (int): size of each training batch
         """
     
-        self.experience = namedtuple('Experience', ['state', 'action', 'reward', 'next_state', 'done']).float().to(device)
-        self.memory = deque()
+        self.experience = namedtuple('Experience', ['state', 'action', 'reward', 'next_state', 'done'])
+        self.memory = deque(maxlen=buffer_size)
         self.buffer_size = buffer_size
         self.batch_size = batch_size
         
