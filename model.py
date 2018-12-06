@@ -8,7 +8,7 @@ import torch.nn.functional as F
 class Actor(nn.Module):
     " Actor (Policy) Model - Neural net to decide what action the agent must take "
     
-    def __init__(self, action_size, state_size, hidden_layers = [256, 64], seed = 123):
+    def __init__(self, action_size, state_size, seed, hidden_layers = [256, 64]):
         """
         Initialize parameters and build model.
         
@@ -16,8 +16,8 @@ class Actor(nn.Module):
         ======
             state_size (int): Dimension of each state
             action_size (int): Dimension of each action
-            seed (int): Random seed
             hidden_layers (int list): Number of hidden layers and nodes in each hidden layer
+            seed (int): Random seed
         """
         super().__init__()
         self.seed = torch.manual_seed(seed)
@@ -62,7 +62,7 @@ class Actor(nn.Module):
 class Critic(nn.Module):
     " Critic (Value) Model - Neural net to estimate the total expected episodic return associated to one action in a given state "
     
-    def __init__(self, action_size, state_size, hidden_layers = [256, 256, 128, 64], seed = 123):
+    def __init__(self, action_size, state_size, seed, hidden_layers = [256, 256, 128, 64]):
         """
         Initialize parameters and build model.
         
@@ -70,8 +70,8 @@ class Critic(nn.Module):
         ======
             state_size (int): Dimension of each state
             action_size (int): Dimension of each action
-            seed (int): Random seed
             hidden_layers (int list): Number of hidden layers and nodes in each hidden layer
+            seed (int): Random seed
         """
         super().__init__()
         self.seed = torch.manual_seed(seed)

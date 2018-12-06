@@ -23,7 +23,7 @@ class Agent:
     " Interacts with and learns from the environment "
     
     
-    def __init__(self, action_size, state_size, hidden_layers = [256, 64], random_seed = 123):
+    def __init__(self, action_size, state_size, random_seed):
         """ Initialize attributes of Agent        
         Params
         ======
@@ -36,12 +36,12 @@ class Agent:
         self.states_size = state_size
         self.seed = random.seed(random_seed)
         
-        self.local_actor = Actor(action_size, state_size, random_seed, hidden_layers)
-        self.target_actor = Actor(action_size, state_size, random_seed, hidden_layers)
+        self.local_actor = Actor(action_size, state_size, random_seed)
+        self.target_actor = Actor(action_size, state_size, random_seed)
         self.actor_optimizer = optim.Adam(self.actor_local.parameters(), lr=LR_ACTOR)
 
-        self.local_critic = Critic(action_size, state_size, random_seed, hidden_layers)
-        self.target_critic = Critic(action_size, state_size, random_seed, hidden_layers)
+        self.local_critic = Critic(action_size, state_size, random_seed)
+        self.target_critic = Critic(action_size, state_size, random_seed)
         self.critic_optimizer = optim.Adam(self.critic_local.parameters(), lr=LR_CRITIC, weight_decay=WEIGHT_DECAY)        
         
         self.experiencies = ReplayBuffer(BUFFER_SIZE, BATCH_SIZE)
