@@ -38,8 +38,11 @@ class Agent:
         
         self.local_actor = Actor(action_size, state_size, random_seed, hidden_layers)
         self.target_actor = Actor(action_size, state_size, random_seed, hidden_layers)
+        self.actor_optimizer = optim.Adam(self.actor_local.parameters(), lr=LR_ACTOR)
+
         self.local_critic = Critic(action_size, state_size, random_seed, hidden_layers)
         self.target_critic = Critic(action_size, state_size, random_seed, hidden_layers)
+        self.critic_optimizer = optim.Adam(self.critic_local.parameters(), lr=LR_CRITIC, weight_decay=WEIGHT_DECAY)        
         
         self.experiencies = ReplayBuffer(BUFFER_SIZE, BATCH_SIZE)
         
@@ -80,16 +83,62 @@ class Agent:
         
         return action
     
-    def learn(self):
-        return None
+    def learn(self, batch, gamma = GAMMA):
+        """ given a batch of experiences, perform gradient ascent on the local networks and soft update on target networks
+        Q_targets = r + γ * critic_target(next_state, actor_target(next_state))
+        where:
+            actor_target(state) -> action
+            critic_target(state, action) -> Q-value
+            
+        Params
+        ======
+            batch (tuple of torch tensors from ndarray): (states, actions, rewards, next_states, dones)
+            gamma (float): discount factor
+        """
+        states, actions, rewards, next_states, dones = batch
+        
+               
+        # compute critic loss
+        Q_local = self.local_critic(states, actions)
+        Q_target_next = self.target_critic(next_states, self.local_actor(next_states))
+        Q_target = rewards + gamma * Q_next * (1 - dones)
+        critic_loss = F.mse_loss(Q_local, Q_target)
+        # Minimize the loss
+        self.critic_optimizer.zero_grad()
+        critic_loss.backward()
+        self.critic_optimizer.step()
+        
+        
+        # gradient ascent actor
+        Q_local_next = self.local_critic(states, self.local_actor(states))
+        actor_loss = - Q_local_next.mean()
+        # Minimize the loss
+        self.actor_optimizer.zero_grad()
+        actor_loss.backward()
+        self.critic_optimizer.step()
+        
+        
+        # soft update of target networks
+        self.soft_update(self.local_critic, self.target_critic, TAU)
+        self.soft_update(self.local_actor, self.target_actor, TAU) 
+        
     
     def reset(self):
-        return None
+        self.noise.reset()
     
-    def soft_update(self):
-        return None
-    
-    
+    def soft_update(self, local_model, target_model, tau):
+        """Soft update model parameters.
+        θ_target = τ*θ_local + (1 - τ)*θ_target
+
+        Params
+        ======
+            local_model: PyTorch model (weights will be copied from)
+            target_model: PyTorch model (weights will be copied to)
+            tau (float): interpolation parameter 
+        """
+        for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
+            target_param.data.copy_(tau*local_param.data + (1.0-tau)*target_param.data)
+            
         
     
 class ReplayBuffer:
