@@ -38,11 +38,11 @@ class Agent:
         
         self.local_actor = Actor(action_size, state_size, random_seed)
         self.target_actor = Actor(action_size, state_size, random_seed)
-        self.actor_optimizer = optim.Adam(self.actor_local.parameters(), lr=LR_ACTOR)
+        self.actor_optimizer = optim.Adam(self.local_actor.parameters(), lr=LR_ACTOR)
 
         self.local_critic = Critic(action_size, state_size, random_seed)
         self.target_critic = Critic(action_size, state_size, random_seed)
-        self.critic_optimizer = optim.Adam(self.critic_local.parameters(), lr=LR_CRITIC, weight_decay=WEIGHT_DECAY)        
+        self.critic_optimizer = optim.Adam(self.local_critic.parameters(), lr=LR_CRITIC, weight_decay=WEIGHT_DECAY)        
         
         self.experiencies = ReplayBuffer(BUFFER_SIZE, BATCH_SIZE)
         
