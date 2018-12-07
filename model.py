@@ -61,7 +61,7 @@ class Actor(nn.Module):
             x = F.relu(linear(x))
         
         # forward final layer with tanh activation (-1, 1)
-        return F.tanh(self.output(x))
+        return torch.tanh(self.output(x))
         
 class Critic(nn.Module):
     " Critic (Value) Model - Neural net to estimate the total expected episodic return associated to one action in a given state "
