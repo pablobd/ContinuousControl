@@ -34,7 +34,7 @@ class Actor(nn.Module):
         self.hidden_layers.extend([nn.Linear(h1, h2) for h1, h2 in layer_sizes])
         
         # final layer
-        self.fcfin = nn.Linear(hidden_layers[-1], action_size)
+        self.output = nn.Linear(hidden_layers[-1], action_size)
         
         self.initialize_weights()
         
@@ -44,7 +44,7 @@ class Actor(nn.Module):
         for layer in self.hidden_layers:
             layer.weight.data.uniform_(*hidden_init(layer))
             
-        self.fcfin.weight.data.uniform_(-3e-3, 3e-3)
+        self.output.weight.data.uniform_(-3e-3, 3e-3)
         
         
     def forward(self, x):
@@ -61,7 +61,7 @@ class Actor(nn.Module):
             x = F.relu(linear(x))
         
         # forward final layer with tanh activation (-1, 1)
-        return F.tanh(self.fcfin(x))
+        return F.tanh(self.output(x))
         
 class Critic(nn.Module):
     " Critic (Value) Model - Neural net to estimate the total expected episodic return associated to one action in a given state "
@@ -89,7 +89,7 @@ class Critic(nn.Module):
         self.hidden_layers.extend([nn.Linear(h1, h2) for h1, h2 in layer_sizes])
         
         # final layer
-        self.fcfin = nn.Linear(hidden_layers[-1], action_size)
+        self.output = nn.Linear(hidden_layers[-1], action_size)
         
         self.initialize_weights()
         
@@ -99,7 +99,7 @@ class Critic(nn.Module):
         for layer in self.hidden_layers:
             layer.weight.data.uniform_(*hidden_init(layer))
             
-        self.fcfin.weight.data.uniform_(-3e-3, 3e-3)
+        self.output.weight.data.uniform_(-3e-3, 3e-3)
         
     def forward(self, states, actions):
         """ 
@@ -112,7 +112,7 @@ class Critic(nn.Module):
         """
         
         # forward through first layer
-        x = F.leaky_rely(hidden_layers[0](states))
+        x = F.leaky_relu(hidden_layers[0](states))
         
         # concatenate output of first layer and action vector
         x = torch.cat((x, actions), dim = 1)
@@ -122,5 +122,5 @@ class Critic(nn.Module):
             x = F.leaky_relu(linear(x))
         
         # forward final layer with tanh activation (-1, 1)
-        return self.fcfin(x)
+        return self.output(x)
     
