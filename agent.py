@@ -186,7 +186,7 @@ class ReplayBuffer:
         " Add a new experience to memory "
         
         self.experience = (state, action, reward, next_state, done)
-        self.memory.append(experience)
+        self.memory.append(self.experience)
         
     def sample(self):
         " Randomly sample a batch of experiences from the memory "
