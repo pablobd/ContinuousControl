@@ -46,6 +46,8 @@ class Agent:
         
         self.experiencies = ReplayBuffer(BUFFER_SIZE, BATCH_SIZE)
         
+        self.noise = OUNoise(action_size, random_seed)
+        
     def step(self, state, action, reward, next_state, done):
         """ Saves experience in replay memory, and uses random sample from buffer to learn        
         Params
@@ -141,7 +143,7 @@ class Agent:
            
         
 class OUNoise:
-    """Ornstein-Uhlenbeck process."""
+    """Ornstein-Uhlenbeck noise process to be added to the actions."""
 
     def __init__(self, size, seed, mu=0., theta=0.15, sigma=0.2):
         """Initialize parameters and noise process."""
