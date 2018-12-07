@@ -110,8 +110,8 @@ class Agent:
         
         
         # gradient ascent actor
-        Q_local_next = self.local_critic(states, self.local_actor(states))
-        actor_loss = - Q_local_next.mean()
+        Q_local = self.local_critic(states, self.local_actor(states))
+        actor_loss = - Q_local.mean()
         # Minimize the loss
         self.actor_optimizer.zero_grad()
         actor_loss.backward()
