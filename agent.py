@@ -103,7 +103,7 @@ class Agent:
         # compute critic loss
         Q_local = self.local_critic(states, actions)
         Q_target_next = self.target_critic(next_states, self.local_actor(next_states))
-        Q_target = rewards + gamma * Q_next * (1 - dones)
+        Q_target = rewards + gamma * Q_target_next * (1 - dones)
         critic_loss = F.mse_loss(Q_local, Q_target)
         # Minimize the loss
         self.critic_optimizer.zero_grad()
