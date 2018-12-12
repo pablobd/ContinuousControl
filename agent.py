@@ -44,7 +44,7 @@ class Agent:
         self.target_critic = Critic(action_size, state_size, random_seed)
         self.critic_optimizer = optim.Adam(self.local_critic.parameters(), lr=LR_CRITIC, weight_decay=WEIGHT_DECAY)        
         
-        self.experiences = ReplayBuffer(BUFFER_SIZE, BATCH_SIZE)
+        self.memory = ReplayBuffer(BUFFER_SIZE, BATCH_SIZE, random_seed)
         
         self.noise = OUNoise(action_size, random_seed)
         
@@ -59,10 +59,10 @@ class Agent:
             done (float ndarray): flag indicating if episode has finished after doing this action
         """
         
-        self.experiences.add(state, action, reward, next_state, done)
+        self.memory.add(state, action, reward, next_state, done)
         
-        if len(self.experiences) > BATCH_SIZE:
-            batch = self.experiences.sample()
+        if len(self.memory) > BATCH_SIZE:
+            batch = self.memory.sample()
             self.learn(batch)
         
         
@@ -169,7 +169,7 @@ class OUNoise:
 class ReplayBuffer:
     " Internal memory of the agent "
     
-    def __init__(self, buffer_size, batch_size):
+    def __init__(self, buffer_size, batch_size, seed):
         """Initialize a ReplayBuffer object.
         Params
         ======
@@ -177,27 +177,29 @@ class ReplayBuffer:
             batch_size (int): size of each training batch
         """
     
-        self.experience = namedtuple('Experience', ['state', 'action', 'reward', 'next_state', 'done'])
         self.memory = deque(maxlen=buffer_size)
-        self.buffer_size = buffer_size
         self.batch_size = batch_size
+        
+        self.experience = namedtuple("Experience", field_names=["state", "action", "reward", "next_state", "done"])
+        
+        self.seed = random.seed(seed)
         
     def add(self, state, action, reward, next_state, done):
         " Add a new experience to memory "
         
-        self.experience = (state, action, reward, next_state, done)
-        self.memory.append(self.experience)
+        e = self.experience(state, action, reward, next_state, done)
+        self.memory.append(e)
         
     def sample(self):
         " Randomly sample a batch of experiences from the memory "
         
-        batch = random.sample(self.memory, self.batch_size)
+        experiences = random.sample(self.memory, k=self.batch_size)
         
-        states = torch.from_numpy([exp.state for exp in batch if exp is not None]).float().to(device)
-        actions = torch.from_numpy([exp.action for exp in batch if exp is not None]).float().to(device)
-        rewards = torch.from_numpy([exp.reward for exp in batch if exp is not None]).float().to(device)
-        next_states = torch.from_numpy([exp.next_state for exp in batch if exp is not None]).float().to(device)
-        dones = torch.from_numpy([exp.done for exp in batch if exp is not None]).float().to(device)
+        states = torch.from_numpy(np.vstack([e.state for e in experiences if e is not None])).float().to(device)
+        actions = torch.from_numpy(np.vstack([e.action for e in experiences if e is not None])).float().to(device)
+        rewards = torch.from_numpy(np.vstack([e.reward for e in experiences if e is not None])).float().to(device)
+        next_states = torch.from_numpy(np.vstack([e.next_state for e in experiences if e is not None])).float().to(device)
+        dones = torch.from_numpy(np.vstack([e.done for e in experiences if e is not None]).astype(np.uint8)).float().to(device)
         
         return (states, actions, rewards, next_states, dones)
     
