@@ -112,7 +112,7 @@ class Critic(nn.Module):
         """
         
         # forward through first layer
-        x = F.leaky_relu(hidden_layers[0](states))
+        x = F.leaky_relu(self.hidden_layers[0](states))
         
         # concatenate output of first layer and action vector
         x = torch.cat((x, actions), dim = 1)
