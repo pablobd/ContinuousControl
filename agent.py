@@ -63,7 +63,7 @@ class Agent:
         
         if len(self.memory) > BATCH_SIZE:
             batch = self.memory.sample()
-            self.learn(batch)
+            self.learn(batch, GAMMA)
         
         
     def act(self, state, add_noise = True):
@@ -85,7 +85,7 @@ class Agent:
         
         return action
     
-    def learn(self, batch, gamma = GAMMA):
+    def learn(self, batch, gamma):
         """ given a batch of experiences, perform gradient ascent on the local networks and soft update on target networks
         Q_targets = r + γ * critic_target(next_state, actor_target(next_state))
         where:
@@ -102,7 +102,7 @@ class Agent:
                
         # compute critic loss
         Q_local = self.local_critic(states, actions)
-        Q_target_next = self.target_critic(next_states, self.local_actor(next_states))
+        Q_target_next = self.target_critic(next_states, self.target_actor(next_states))
         Q_target = rewards + gamma * Q_target_next * (1 - dones)
         critic_loss = F.mse_loss(Q_local, Q_target)
         # Minimize the loss
