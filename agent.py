@@ -117,7 +117,7 @@ class Agent:
         # Minimize the loss
         self.actor_optimizer.zero_grad()
         actor_loss.backward()
-        self.critic_optimizer.step()
+        self.actor_optimizer.step()
         
         
         # soft update of target networks
