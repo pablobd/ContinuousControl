@@ -6,6 +6,7 @@ The algorithm used is DDPG described in this [paper](https://arxiv.org/abs/1509.
 
 Unfortunately, with this approach the agent learns very slowly, hence seems not suitable for this challenge (see the image below).
 
+![alt text](https://github.com/pablobd/ContinuousControl-DDPG/blob/master/ddpg.PNG)
 
 ## Next Steps
 
