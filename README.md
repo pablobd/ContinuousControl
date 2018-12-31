@@ -1,7 +1,9 @@
-# ContinuousControl
+# ContinuousControl DDPG
 
 ## Description
 Train a DRL agent control a double-jointed arm, to reach target locations. Watch this [YouTube video](https://www.youtube.com/watch?v=ZVIxt2rt1_4) to see how some researchers were able to train a similar task on a real robot! The accompanying research paper can be found [here](https://arxiv.org/pdf/1803.07067.pdf).
+
+We implement the [DDPG](https://arxiv.org/abs/1509.02971) algorithm to train the agent. This algorithm turns out to be too slow, as the experience is not in parallel and the agent has difficulties to learn.
 
 In the second version of the project environment, there are 20 identical copies of the agent. It has been shown that having multiple copies of the same agent sharing experience can accelerate learning, as explained in this [google AI blog post](https://ai.googleblog.com/2016/10/how-robots-can-acquire-new-skills-from.html). You can use the second version to implement algorithms like [PPO](https://arxiv.org/pdf/1707.06347.pdf), [A3C](https://arxiv.org/pdf/1602.01783.pdf) and [D4PG](https://openreview.net/pdf?id=SyZipzbCb) that use multiple (non-interacting, parallel) copies of the same agent to distribute the task of gathering experience. 
 
@@ -13,7 +15,7 @@ The observation space consists of 33 variables corresponding to position, rotati
 
 #### Solving the environment
 
-**First version: 1 agent.** The task is episodic, and in order to solve the environment, your agent must get an average score of +30 over 100 consecutive episodes.
+**First version: 1 agent.** The task is episodic, and in order to solve the environment, the agent must get an average score of +30 over 100 consecutive episodes.
 
 **Second version: 20 identical copies of the agent.** The barrier for solving the second version of the environment is slightly different, to take into account the presence of many agents. In particular, your agents must get an average score of +30 (over 100 consecutive episodes, and over all agents). Specifically,
 
