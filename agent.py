@@ -33,15 +33,15 @@ class Agent:
         """
         
         self.action_size = action_size
-        self.states_size = state_size
+        self.state_size = state_size
         self.seed = random.seed(random_seed)
         
-        self.local_actor = Actor(action_size, state_size, random_seed)
-        self.target_actor = Actor(action_size, state_size, random_seed)
+        self.local_actor = Actor(action_size, state_size, random_seed, hidden_layers = [256, 64])
+        self.target_actor = Actor(action_size, state_size, random_seed, hidden_layers = [256, 64])
         self.actor_optimizer = optim.Adam(self.local_actor.parameters(), lr=LR_ACTOR)
 
-        self.local_critic = Critic(action_size, state_size, random_seed)
-        self.target_critic = Critic(action_size, state_size, random_seed)
+        self.local_critic = Critic(action_size, state_size, random_seed, hidden_layers = [256, 256, 128, 64])
+        self.target_critic = Critic(action_size, state_size, random_seed, hidden_layers = [256, 256, 128, 64])
         self.critic_optimizer = optim.Adam(self.local_critic.parameters(), lr=LR_CRITIC, weight_decay=WEIGHT_DECAY)        
         
         self.memory = ReplayBuffer(BUFFER_SIZE, BATCH_SIZE, random_seed)
@@ -119,10 +119,9 @@ class Agent:
         actor_loss.backward()
         self.actor_optimizer.step()
         
-        
         # soft update of target networks
         self.soft_update(self.local_critic, self.target_critic, TAU)
-        self.soft_update(self.local_actor, self.target_actor, TAU) 
+        self.soft_update(self.local_actor, self.target_actor, TAU)
         
     
     def reset(self):
@@ -138,9 +137,9 @@ class Agent:
             target_model: PyTorch model (weights will be copied to)
             tau (float): interpolation parameter 
         """
-        for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
+        for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):            
             target_param.data.copy_(tau*local_param.data + (1.0-tau)*target_param.data)
-           
+        
         
 class OUNoise:
     """Ornstein-Uhlenbeck noise process to be added to the actions."""
