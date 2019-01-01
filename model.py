@@ -89,7 +89,7 @@ class Critic(nn.Module):
         self.hidden_layers.extend([nn.Linear(h1, h2) for h1, h2 in layer_sizes])
         
         # final layer
-        self.output = nn.Linear(hidden_layers[-1], action_size)
+        self.output = nn.Linear(hidden_layers[-1], 1)
         
         self.initialize_weights()
         
